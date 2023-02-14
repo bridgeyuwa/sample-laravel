@@ -1,0 +1,71 @@
+<?php
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class DegreeType extends Model
+{
+    public function programs()
+    {
+        return $this->belongsToMany(Program::class, 'degree_type_program');
+    }
+}
+
+class Program extends Model
+{
+    public function degreeTypes()
+    {
+        return $this->belongsToMany(DegreeType::class, 'degree_type_program');
+    }
+
+    public function institutions()
+    {
+        return $this->belongsToMany(Institution::class, 'institution_program');
+    }
+
+    public function utmeSubjects()
+    {
+        return $this->belongsToMany(UtmeSubject::class);
+    }
+}
+
+
+
+// Migration 
+
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateDegreeTypeProgramTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('degree_type_program', function (Blueprint $table) {
+            $table->integer('degree_type_id')->unsigned();
+            $table->integer('program_id')->unsigned();
+            $table->foreign('degree_type_id')->references('id')->on('degree_types')->onDelete('cascade');
+            $table->foreign('program_id')->references('id')->on('programs')->onDelete('cascade');
+            $table->unique(['degree_type_id', 'program_id']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('degree_type_program');
+    }
+}
+
